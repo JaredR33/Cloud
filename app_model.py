@@ -102,6 +102,3 @@ def retrain():
     model_name = 'modelo_actualizado' + formatted_date + '.pkl'
     with open(model_name, 'wb') as f:
         pickle.dump(model, f)
-
-
-app.run()
