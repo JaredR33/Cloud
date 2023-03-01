@@ -8,6 +8,8 @@ import os
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
+import datetime
+
 
 
 os.chdir(os.path.dirname(__file__))
@@ -69,7 +71,9 @@ def ingest_data():
     return 'Los datos se han insertado correctamente.'
 
 
-3 @app.route('/v2/retrain model', methods=['GET'])
+#3 Posibilidad de reentrenar de nuevo el modelo con los posibles nuevos registros que se recojan. (/v2/retrain)
+
+@app.route('/v2/retrain model', methods=['GET'])
 def retrain():
     # Conectarse a la base de datos
     conn = sqlite3.connect('data/advertising2.db')
@@ -93,7 +97,10 @@ def retrain():
     model.fit(X_train, y_train)
 
     # Guardar el modelo reentrenado en un archivo con pickle
-    with open('modelo_actualizado.pkl', 'wb') as f:
+    now = datetime.datetime.now()
+    formatted_date = now.strftime("%m-%d")
+    model_name = 'modelo_actualizado' + formatted_date + '.pkl'
+    with open(model_name, 'wb') as f:
         pickle.dump(model, f)
 
 
