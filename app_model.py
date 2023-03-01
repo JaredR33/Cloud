@@ -5,7 +5,12 @@ from sklearn.model_selection import cross_val_score
 import pandas as pd
 import sqlite3
 import os
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
 
+
+os.chdir(os.path.dirname(__file__))
 
 os.chdir(os.path.dirname(__file__))
 
@@ -14,7 +19,7 @@ app.config['DEBUG'] = True
 
 @app.route("/", methods=['GET'])
 def hello():
-    return "Bienvenido a mi API del modelo advertising"
+    return "Bienvenido a mi API del modelo advertising de Jaredorito"
 
 # 1. Endpoint que devuelva la predicción de los nuevos datos enviados mediante argumentos en la llamada
 @app.route('/v1/predict', methods=['GET'])
@@ -43,7 +48,7 @@ def ingest_data():
 
 
     # Establecer una conexión con la base de datos y crear un cursor
-    conn = sqlite3.connect('advertising2.db')
+    conn = sqlite3.connect('data/advertising2.db')
     cursor = conn.cursor()
     
     cursor.execute('''CREATE TABLE IF NOT EXISTS campanias
@@ -64,9 +69,32 @@ def ingest_data():
     return 'Los datos se han insertado correctamente.'
 
 
-#3 
+3 @app.route('/v2/retrain model', methods=['GET'])
+def retrain():
+    # Conectarse a la base de datos
+    conn = sqlite3.connect('data/advertising2.db')
+    cursor = conn.cursor()
 
+    # Cargar los datos de entrenamiento desde la base de datos
+    training_data = pd.read_sql_query ('''
+                               SELECT
+                               *
+                               FROM campanias
+                               ''', conn)
+  
+    # Cargar el modelo entrenado desde un archivo con pickle
+    model = pickle.load(open('data/advertising_model','rb'))
 
+    # Preparar los datos de entrenamiento
+    X_train = training_data.drop('sales', axis=1)
+    y_train = training_data['sales']
+
+    # Reentrenar el modelo
+    model.fit(X_train, y_train)
+
+    # Guardar el modelo reentrenado en un archivo con pickle
+    with open('modelo_actualizado.pkl', 'wb') as f:
+        pickle.dump(model, f)
 
 
 app.run()
