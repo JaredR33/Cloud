@@ -73,7 +73,7 @@ def ingest_data():
 
 #3 Posibilidad de reentrenar de nuevo el modelo con los posibles nuevos registros que se recojan. (/v2/retrain)
 
-@app.route('/v2/retrain model', methods=['GET'])
+@app.route('/v2/retrain model', methods=['PUT']) #CUIDADO CON EL METODO
 def retrain():
     # Conectarse a la base de datos
     conn = sqlite3.connect('data/advertising2.db')
@@ -102,3 +102,5 @@ def retrain():
     model_name = 'modelo_actualizado' + formatted_date + '.pkl'
     with open(model_name, 'wb') as f:
         pickle.dump(model, f)
+
+app.run()
